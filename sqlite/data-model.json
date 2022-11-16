@@ -1,0 +1,53 @@
+{
+  "entityAttributeTypes": [
+    {
+      "archived": false,
+      "description": "",
+      "entityTypeId": "user",
+      "id": "firstName",
+      "name": "First name",
+      "type": "string"
+    },
+    {
+      "archived": false,
+      "description": "",
+      "entityTypeId": "user",
+      "id": "lastName",
+      "name": "Last name",
+      "type": "string"
+    },
+    {
+      "archived": false,
+      "description": "",
+      "entityTypeId": "user",
+      "id": "lastLogon",
+      "name": "Last logon",
+      "type": "dateTime"
+    },
+    {
+      "archived": false,
+      "description": "",
+      "entityTypeId": "role",
+      "id": "securityLevel",
+      "name": "Security level",
+      "type": "number"
+    }
+  ],
+  "entityTypes": [
+    {
+      "anonymized": false,
+      "icon": "person",
+      "id": "user",
+      "plural": "Users",
+      "singular": "User"
+    },
+    {
+      "anonymized": false,
+      "icon": "label",
+      "id": "role",
+      "plural": "Roles",
+      "singular": "Role"
+    }
+  ],
+  "relationshipAttributeTypes": []
+}
