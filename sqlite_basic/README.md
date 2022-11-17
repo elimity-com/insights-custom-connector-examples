@@ -49,7 +49,9 @@ INSERT INTO user_roles (role_id, user_id)
 VALUES
     (1, 1),
     (1, 2),
-    (2, 2)
+    (2, 2);
+
+COMMIT
 ```
 
 ## Data model for Elimity Insights

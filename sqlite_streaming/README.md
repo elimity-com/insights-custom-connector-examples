@@ -13,7 +13,7 @@ using [https://docs.python.org/3/library/argparse.html](ArgParse).
 
 ```console
 (venv) $ elimity-insights-example-sqlite-connector --help
-usage: elimity-insights-example-sqlite-connector [-h] --database DATABASE [--generate-database] --source-id SOURCE_ID --source-token SOURCE_TOKEN --url URL
+usage: elimity-insights-example-sqlite-connector [-h] --database DATABASE --source-id SOURCE_ID --source-token SOURCE_TOKEN --url URL
 
 Example Elimity Insights custom connector importing from a SQLite database
 
@@ -70,7 +70,9 @@ INSERT INTO user_roles (role_id, user_id)
 VALUES
     (1, 1),
     (1, 2),
-    (2, 2)
+    (2, 2);
+
+COMMIT
 ```
 
 ## Data model for Elimity Insights

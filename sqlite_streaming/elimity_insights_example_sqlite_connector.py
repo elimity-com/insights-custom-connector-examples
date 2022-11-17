@@ -22,7 +22,7 @@ def main() -> None:
     config = Config(args.source_id, args.url, args.source_token)
     client = Client(config)
     with connect(args.database, isolation_level=None) as connection:
-        connection.executescript("BEGIN")
+        connection.execute("BEGIN")
         entities = _entities(connection)
         relationships = _relationships(connection)
         graph = DomainGraph(entities, relationships)
