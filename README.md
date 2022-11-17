@@ -20,3 +20,26 @@ After installing, a CLI for the chosen connector should be available in the virt
 ```console
 (venv) $ elimity-insights-example-<connector-name>-connector --help
 ```
+
+## Development
+
+Contributing to these connectors requires [Poetry](https://python-poetry.org/). The examples below show how to perform
+some common development tasks, with the working directory set for a specific connector.
+
+### Installing the development environment
+
+```console
+$ poetry install
+```
+
+### Formatting
+
+```console
+$ poetry run black .
+```
+
+### Type-checking
+
+```console
+$ poetry run mypy .
+```
