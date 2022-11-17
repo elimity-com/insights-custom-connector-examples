@@ -4,7 +4,7 @@ This Python package implements a basic connector importing data from a SQLite (v
 higher) database. 
 
 Note: For larger datasets we recommend avoiding loading all data into memory at once. 
-[../sqlite_streaming](This) example connector extends the basic example with streaming to avoid this.
+[This](../sqlite_streaming) example connector extends the basic example with streaming to avoid this.
 
 ## Example data
 

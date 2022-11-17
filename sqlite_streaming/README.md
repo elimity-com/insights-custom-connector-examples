@@ -3,11 +3,11 @@
 This Python package implements an example connector importing data from a SQLite (version 3.37.0 or
 higher) database. 
 
-This example extends [../sqlite_basic](the basic example) with data streaming
+This example extends [the basic example](../sqlite_basic) with data streaming
 to avoid that all data is loaded into memory at once, which is useful for large datasets.
 
 In addition, this example illustrates how to receive input parameters from the command line
-using [https://docs.python.org/3/library/argparse.html](ArgParse).
+using [ArgParse](https://docs.python.org/3/library/argparse.html).
 
 ## Usage
 
