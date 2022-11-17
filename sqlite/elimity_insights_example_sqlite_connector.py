@@ -1,7 +1,6 @@
-from argparse import ArgumentParser
 from datetime import datetime
-from sqlite3 import Connection, connect
-from typing import Iterable, List, Optional
+from sqlite3 import connect
+from typing import List
 
 from elimity_insights_client import (
     AttributeAssignment,
@@ -16,132 +15,69 @@ from elimity_insights_client import (
     StringValue,
 )
 
+# Configuration
+# Note: If you want, you can turn these variables into command line inputs using [https://docs.python.org/3/library/argparse.html](ArgParse).
+DATABASE = "mydb.sqlite3"
+ELIMITY_INSIGHTS_URL = "https://example.elimity.com"
+ELIMITY_INSIGHTS_SOURCE_ID = "1"
+ELIMITY_INSIGHTS_SOURCE_API_TOKEN = "34kj328ukj291ukjsdkj394ukjdf"
+
 
 def main() -> None:
-    args = _parser.parse_args()
-    config = Config(args.source_id, args.url, args.source_token)
+    config = Config(ELIMITY_INSIGHTS_SOURCE_ID, ELIMITY_INSIGHTS_URL, ELIMITY_INSIGHTS_SOURCE_API_TOKEN)
     client = Client(config)
-    with connect(args.database, isolation_level=None) as connection:
-        sql = """
-            BEGIN;
+    with connect(DATABASE, isolation_level=None) as connection:
 
-            CREATE TABLE users (
-                display_name TEXT NOT NULL,
-                first_name TEXT NOT NULL,
-                id INTEGER PRIMARY KEY,
-                last_name TEXT NOT NULL,
-                last_logon INTEGER
-            ) STRICT;
+        connection.executescript("BEGIN")
 
-            INSERT INTO users (display_name, first_name, last_name, last_logon)
-            VALUES
-                ('dduck', 'Donald', 'Duck', 1668603363),
-                ('mmouse', 'Mickey', 'Mouse', NULL);
-            CREATE TABLE roles (
-                id INTEGER PRIMARY KEY,
-                name TEXT NOT NULL,
-                security_level INTEGER NOT NULL
-            ) STRICT;
+        # To load the data of the database into Elimity Insights, we have to construct a "domain graph".
+        # Essentially, this domain graph contains the list of entities and their attribute assignments,
+        # and the relationships between these entities.
+        entities: List[Entity] = []
+        relationships: List[Relationship] = []
 
-            INSERT INTO roles (name, security_level)
-            VALUES
-                ('Reader', 0),
-                ('Writer', 1);
+        # Step 1. Turn the users into entities with attribute assignments.
+        for display_name, first_name, id, last_logon, last_name in connection.execute("""
+            SELECT display_name, first_name, CAST(id AS TEXT), last_logon, last_name
+            FROM users
+        """):
+            assignments: List[AttributeAssignment] = [
+                AttributeAssignment("firstName", StringValue(first_name)),
+                AttributeAssignment("lastName", StringValue(last_name))
+            ]
+            if last_logon is not None:
+                last_logon_datetime = datetime.utcfromtimestamp(last_logon)
+                last_logon_time = DateTime(
+                    last_logon_datetime.year,
+                    last_logon_datetime.month,
+                    last_logon_datetime.day,
+                    last_logon_datetime.hour,
+                    last_logon_datetime.minute,
+                    last_logon_datetime.second,
+                )
+                last_logon_value = DateTimeValue(last_logon_time)
+                assignments.append(AttributeAssignment("lastLogon", last_logon_value))
+            entities.append(Entity(assignments, id, display_name, "user"))
 
-            CREATE TABLE user_roles (
-                id INTEGER PRIMARY KEY,
-                role_id INTEGER NOT NULL REFERENCES roles (id),
-                user_id INTEGER NOT NULL REFERENCES users (id),
-                UNIQUE (role_id, user_id)
-            ) STRICT;
+        # Step 2. Turn the roles into entities with attribute assignments
+        for id, name, security_level in connection.execute("""
+            SELECT CAST(id AS TEXT), name, security_level
+            FROM roles
+        """):
+            assignments: List[AttributeAssignment] = [
+                AttributeAssignment("securityLevel", NumberValue(security_level))
+            ]
+            entities.append(Entity(assignments, id, name, "role"))
 
-            INSERT INTO user_roles (role_id, user_id)
-            VALUES
-                (1, 1),
-                (1, 2),
-                (2, 2)
-        """
-        connection.executescript(sql if args.generate_database else "BEGIN")
-        entities = _entities(connection)
-        relationships = _relationships(connection)
+        # Step 3. Turn the relationships table into relationships
+        for user_id, role_id in connection.execute("""
+            SELECT CAST(user_id AS TEXT), CAST(role_id AS TEXT)
+            FROM user_roles
+        """):
+            # Relationships can be assigned attributes as well, but this example does not include that.
+            assignments: List[AttributeAssignment] = []
+            entities.append(Relationship(assignments, user_id, "user", role_id, "role"))
+
+        # Step 4. Upload the entities and relationships as a domain graph
         graph = DomainGraph(entities, relationships)
         client.reload_domain_graph(graph)
-
-
-def _entities(connection: Connection) -> Iterable[Entity]:
-    user_sql = """
-        SELECT display_name, first_name, CAST(id AS TEXT), last_logon, last_name
-        FROM users
-    """
-    for display_name, first_name, id, last_logon, last_name in connection.execute(
-        user_sql
-    ):
-        assignments = _user_attribute_assignments(first_name, last_logon, last_name)
-        yield Entity(assignments, id, display_name, "user")
-    role_sql = """
-        SELECT CAST(id AS TEXT), name, security_level
-        FROM roles
-    """
-    for id, name, security_level in connection.execute(role_sql):
-        security_level_value = NumberValue(security_level)
-        security_level_assignment = AttributeAssignment(
-            "securityLevel", security_level_value
-        )
-        assignments = [security_level_assignment]
-        yield Entity(assignments, id, name, "role")
-
-
-def _relationships(connection: Connection) -> Iterable[Relationship]:
-    sql = """
-        SELECT CAST(user_id AS TEXT), CAST(role_id AS TEXT)
-        FROM user_roles
-    """
-    for user_id, role_id in connection.execute(sql):
-        assignments: List[AttributeAssignment] = []
-        yield Relationship(assignments, user_id, "user", role_id, "role")
-
-
-def _user_attribute_assignments(
-    first_name: str, last_logon: Optional[int], last_name: str
-) -> Iterable[AttributeAssignment]:
-    yield _string_attribute_assignment("firstName", first_name)
-    yield _string_attribute_assignment("lastName", last_name)
-    if last_logon is not None:
-        last_logon_datetime = datetime.utcfromtimestamp(last_logon)
-        last_logon_time = DateTime(
-            last_logon_datetime.year,
-            last_logon_datetime.month,
-            last_logon_datetime.day,
-            last_logon_datetime.hour,
-            last_logon_datetime.minute,
-            last_logon_datetime.second,
-        )
-        last_logon_value = DateTimeValue(last_logon_time)
-        yield AttributeAssignment("lastLogon", last_logon_value)
-
-
-def _add_flag(help: str, name: str, type_int: bool = False) -> None:
-    _parser.add_argument(name, help=help, required=True, type=int if type_int else str)
-
-
-def _string_attribute_assignment(
-    attribute_type_id: str, raw_value: str
-) -> AttributeAssignment:
-    processed_value = StringValue(raw_value)
-    return AttributeAssignment(attribute_type_id, processed_value)
-
-
-_parser = ArgumentParser(
-    description="Example Elimity Insights custom connector importing from a SQLite database"
-)
-_add_flag("path to the SQLite database file", "--database")
-_parser.add_argument(
-    "--generate-database",
-    action="store_true",
-    help="generate a new sample database before importing",
-)
-_add_flag(
-    "identifier for authenticating the source in Elimity Insights", "--source-id", True
-)
-_add_flag("token for authenticating the source in Elimity Insights", "--source-token")
-_add_flag("URL of the Elimity Insights server", "--url")
