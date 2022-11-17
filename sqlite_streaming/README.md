@@ -20,7 +20,6 @@ Example Elimity Insights custom connector importing from a SQLite database
 optional arguments:
   -h, --help            show this help message and exit
   --database DATABASE   path to the SQLite database file
-  --generate-database   generate a new sample database before importing
   --source-id SOURCE_ID
                         identifier for authenticating the source in Elimity Insights
   --source-token SOURCE_TOKEN

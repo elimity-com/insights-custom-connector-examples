@@ -22,46 +22,7 @@ def main() -> None:
     config = Config(args.source_id, args.url, args.source_token)
     client = Client(config)
     with connect(args.database, isolation_level=None) as connection:
-        sql = """
-            BEGIN;
-
-            CREATE TABLE users (
-                display_name TEXT NOT NULL,
-                first_name TEXT NOT NULL,
-                id INTEGER PRIMARY KEY,
-                last_name TEXT NOT NULL,
-                last_logon INTEGER
-            ) STRICT;
-
-            INSERT INTO users (display_name, first_name, last_name, last_logon)
-            VALUES
-                ('dduck', 'Donald', 'Duck', 1668603363),
-                ('mmouse', 'Mickey', 'Mouse', NULL);
-            CREATE TABLE roles (
-                id INTEGER PRIMARY KEY,
-                name TEXT NOT NULL,
-                security_level INTEGER NOT NULL
-            ) STRICT;
-
-            INSERT INTO roles (name, security_level)
-            VALUES
-                ('Reader', 0),
-                ('Writer', 1);
-
-            CREATE TABLE user_roles (
-                id INTEGER PRIMARY KEY,
-                role_id INTEGER NOT NULL REFERENCES roles (id),
-                user_id INTEGER NOT NULL REFERENCES users (id),
-                UNIQUE (role_id, user_id)
-            ) STRICT;
-
-            INSERT INTO user_roles (role_id, user_id)
-            VALUES
-                (1, 1),
-                (1, 2),
-                (2, 2)
-        """
-        connection.executescript(sql if args.generate_database else "BEGIN")
+        connection.executescript("BEGIN")
         entities = _entities(connection)
         relationships = _relationships(connection)
         graph = DomainGraph(entities, relationships)
@@ -135,11 +96,6 @@ _parser = ArgumentParser(
     description="Example Elimity Insights custom connector importing from a SQLite database"
 )
 _add_flag("path to the SQLite database file", "--database")
-_parser.add_argument(
-    "--generate-database",
-    action="store_true",
-    help="generate a new sample database before importing",
-)
 _add_flag(
     "identifier for authenticating the source in Elimity Insights", "--source-id", True
 )
