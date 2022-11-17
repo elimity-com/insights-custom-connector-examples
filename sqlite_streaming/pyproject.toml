@@ -1,0 +1,22 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "elimity-insights-example-sqlite-connector"
+version = "0.1.0"
+description = "Example Elimity Insights custom connector importing from a SQLite database"
+authors = ["Elimity development team <dev@elimity.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+elimity-insights-client = "^9.0.0"
+
+[tool.poetry.scripts]
+elimity-insights-example-sqlite-connector = "elimity_insights_example_sqlite_connector:main"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+mypy = "^0.991"
+isort = "^5.10.1"
+

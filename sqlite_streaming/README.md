@@ -1,26 +1,13 @@
-# Elimity Insights example SQLite connector
+# Elimity Insights example SQLite connector with data streaming
 
-This Python package implements an example Elimity Insights custom connector importing from a SQLite (version 3.37.0 or
+This Python package implements an example connector importing data from a SQLite (version 3.37.0 or
 higher) database. 
 
-## Usage
+This example extends [../sqlite_basic](the basic example) with data streaming
+to avoid that all data is loaded into memory at once, which is useful for large datasets.
 
-```console
-(venv) $ elimity-insights-example-sqlite-connector --help
-usage: elimity-insights-example-sqlite-connector [-h] --database DATABASE [--generate-database] --source-id SOURCE_ID --source-token SOURCE_TOKEN --url URL
-
-Example Elimity Insights custom connector importing from a SQLite database
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --database DATABASE   path to the SQLite database file
-  --generate-database   generate a new sample database before importing
-  --source-id SOURCE_ID
-                        identifier for authenticating the source in Elimity Insights
-  --source-token SOURCE_TOKEN
-                        token for authenticating the source in Elimity Insights
-  --url URL             URL of the Elimity Insights server
-```
+In addition, this example illustrates how to receive input parameters from the command line
+using [https://docs.python.org/3/library/argparse.html](ArgParse).
 
 ## Example data
 

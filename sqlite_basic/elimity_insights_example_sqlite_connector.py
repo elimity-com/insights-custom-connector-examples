@@ -17,6 +17,7 @@ from elimity_insights_client import (
 
 # Configuration
 # Note: If you want, you can turn these variables into command line inputs using [https://docs.python.org/3/library/argparse.html](ArgParse).
+# See the example connector `sqlite_streaming` for an example of how to do this.
 DATABASE = "mydb.sqlite3"
 ELIMITY_INSIGHTS_URL = "https://example.elimity.com"
 ELIMITY_INSIGHTS_SOURCE_ID = "1"
