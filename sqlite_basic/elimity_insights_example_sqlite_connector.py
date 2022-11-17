@@ -18,10 +18,10 @@ from elimity_insights_client import (
 # Configuration
 # Note: If you want, you can turn these variables into command line inputs using [https://docs.python.org/3/library/argparse.html](ArgParse).
 # See the example connector `sqlite_streaming` for an example of how to do this.
-DATABASE = "database.sqlite3"
-ELIMITY_INSIGHTS_URL = "https://staging.elimity-lab.com"
-ELIMITY_INSIGHTS_SOURCE_ID = 10
-ELIMITY_INSIGHTS_SOURCE_API_TOKEN = "ZvQKw7UtFiJFW0fplBNnvP5BJJw7eNs+5I7i0KbpHDguZtHhf45cEiKbVBSFNH84QJOurVzNwOPRghb4kb5Xhg=="
+DATABASE = "mydb.sqlite3"
+ELIMITY_INSIGHTS_URL = "https://example.elimity.com"
+ELIMITY_INSIGHTS_SOURCE_ID = "1"
+ELIMITY_INSIGHTS_SOURCE_API_TOKEN = "34kj328ukj291ukjsdkj394ukjdf"
 
 
 def main() -> None:
