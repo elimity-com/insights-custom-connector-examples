@@ -16,7 +16,7 @@ elimity-insights-client = "^9.0.0"
 elimity-insights-example-sqlite-connector = "elimity_insights_example_sqlite_connector:main"
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.10.0"
+black = "^24.3.0"
 mypy = "^0.991"
 isort = "^5.10.1"
 
