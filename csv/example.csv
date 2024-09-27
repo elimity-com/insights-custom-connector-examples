@@ -1,0 +1,8 @@
+role_id,role_name,role_security_level,type,user_display_name,user_first_name,user_id,user_last_name,user_last_logon,user_role_rid,user_role_uid
+1,Reader,0,role,,,,,,,
+2,Writer,1,role,,,,,,,
+,,,user,dduck,Donald,1,Duck,1668603363,,
+,,,user,mmouse,Mickey,2,Mouse,,,
+,,,user_role,,,,,,1,1
+,,,user_role,,,,,,1,2
+,,,user_role,,,,,,2,2
